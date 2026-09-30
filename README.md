@@ -21,7 +21,7 @@ A native macOS menu bar app that triggers **deep hibernate on demand** — indep
 3. Open the app from Applications
 4. Configure settings, then close the window — the app stays in the menu bar
 
-On first hibernate, macOS will ask for your password **once** to install the privileged helper. After that, hibernates are passwordless.
+On first hibernate, macOS will ask for your password **once** to install the privileged helper. After that, hibernates are passwordless — including across app updates, since the app only asks again when the helper binary itself changes.
 
 ## Settings
 

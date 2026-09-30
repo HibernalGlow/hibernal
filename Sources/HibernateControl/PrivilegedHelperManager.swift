@@ -1,3 +1,4 @@
+import CryptoKit
 import Foundation
 
 enum PrivilegedHelperManager {
@@ -5,11 +6,6 @@ enum PrivilegedHelperManager {
     private static let helperLabel = "com.hibernatecontrol.helper"
     private static let installedPath = "/Library/PrivilegedHelperTools/\(helperLabel)"
     private static let plistPath = "/Library/LaunchDaemons/\(helperLabel).plist"
-    private static let installedVersionKey = "installedHelperVersion"
-
-    private static var defaults: UserDefaults {
-        UserDefaults(suiteName: "com.hibernatecontrol.settings") ?? .standard
-    }
 
     static var isInstalled: Bool {
         FileManager.default.fileExists(atPath: installedPath)
@@ -17,14 +13,25 @@ enum PrivilegedHelperManager {
     }
 
     static var isReady: Bool {
-        isInstalled && installedVersionMatchesApp
+        isInstalled && installedHelperIsCurrent
     }
 
-    private static var installedVersionMatchesApp: Bool {
-        guard let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String else {
+    /// The version stamp this replaces re-prompted on every release even when the
+    /// helper itself was untouched. Byte comparison asks the question that actually
+    /// matters: is the installed helper the same binary this build ships?
+    private static var installedHelperIsCurrent: Bool {
+        guard let embedded = embeddedHelperURL(),
+              let shipped = digest(of: embedded),
+              let onDisk = digest(of: URL(fileURLWithPath: installedPath))
+        else {
             return false
         }
-        return defaults.string(forKey: installedVersionKey) == appVersion
+        return shipped == onDisk
+    }
+
+    private static func digest(of url: URL) -> SHA256Digest? {
+        guard let data = try? Data(contentsOf: url) else { return nil }
+        return SHA256.hash(data: data)
     }
 
     static func executeHibernateScript(at path: String, completion: @escaping (Bool) -> Void) {
@@ -141,9 +148,6 @@ enum PrivilegedHelperManager {
         """
 
         runAdminCommand(installCommand, label: "install privileged helper") { success in
-            if success, let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
-                defaults.set(version, forKey: installedVersionKey)
-            }
             completion(success)
         }
     }
