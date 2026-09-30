@@ -77,6 +77,8 @@ Outputs:
 - `releases/Hibernate Control-<version>.app` — archived build
 - `releases/Hibernate Control-<version>.dmg` — installer
 
+Both scripts ad-hoc sign their output and fail the build if `codesign --verify --deep --strict` rejects it. Pass `SIGN_IDENTITY` to sign with a real certificate instead.
+
 ## Project structure
 
 ```
@@ -98,6 +100,16 @@ macOS enforces a cooldown after wake before another full hibernate will stick. O
 
 **Privileged helper not installed**  
 Check Settings for the orange/green helper status. First hibernate prompts for your password once to install.
+
+**"Hibernate Control is damaged" / "cannot be verified"**  
+Builds are ad-hoc signed (`codesign --verify --deep --strict` passes), so drag-to-Applications works, but a *quarantined* copy still needs one approval on a machine with Gatekeeper enabled: **System Settings → Privacy & Security → Open Anyway**. Any copy built before the signing step is genuinely invalid (no resource seal) and Finder reports it damaged regardless of approval — rebuild from this version of `build-dmg.sh`.
+
+To remove the approval step for everyone, sign with a paid Apple Developer ID and notarize:
+
+```bash
+SIGN_IDENTITY="Developer ID Application: Your Name (TEAMID)" ./build-dmg.sh
+xcrun notarytool submit "releases/Hibernate Control-$(cat VERSION).dmg" --keychain-profile notary --wait
+```
 
 **Move app to Applications**  
 Use **Quit App** before copying to `/Applications`, then toggle **Start on login** off and on to refresh the Launch Agent path.

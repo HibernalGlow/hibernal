@@ -8,6 +8,7 @@ DMG_NAME="$APP_NAME-$VERSION.dmg"
 STAGING_DIR="$SCRIPT_DIR/build/dmg-staging"
 DMG_PATH="$SCRIPT_DIR/releases/$DMG_NAME"
 APP_BUNDLE="$SCRIPT_DIR/dist/$APP_NAME.app"
+SIGN_IDENTITY="${SIGN_IDENTITY:--}"
 
 "$SCRIPT_DIR/build-app.sh"
 
@@ -25,6 +26,11 @@ hdiutil create \
   "$DMG_PATH" >/dev/null
 
 rm -rf "$STAGING_DIR"
+
+# The outer container needs a signature too: an unsigned DMG is what carries the
+# quarantine flag onto whatever the user drags out of it.
+codesign --force --sign "$SIGN_IDENTITY" "$DMG_PATH"
+codesign --verify --strict --verbose=2 "$DMG_PATH"
 
 echo "Created $DMG_PATH"
 echo "Open with: open \"$DMG_PATH\""

@@ -12,6 +12,14 @@ HELPER_SOURCES_DIR="$SCRIPT_DIR/Sources/HibernateHelper"
 SHARED_SOURCES_DIR="$SCRIPT_DIR/Sources/Shared"
 VERSION=$(cat "$SCRIPT_DIR/VERSION")
 
+# swiftc/ld only leaves an ad-hoc *linker* signature on each executable, which seals
+# neither Info.plist nor resources; such a bundle reads as "damaged" once it arrives
+# through a quarantined download. Ad-hoc is the floor, not the ceiling: a Developer ID
+# identity here is what lets other machines open it without a Gatekeeper override.
+SIGN_IDENTITY="${SIGN_IDENTITY:--}"
+HELPER_IDENTIFIER="com.hibernatecontrol.helper"
+BUNDLE_IDENTIFIER="com.hibernatecontrol.app"
+
 rm -rf "$BUILD_DIR" "$DIST_DIR"
 mkdir -p "$BUILD_DIR" \
   "$DIST_DIR/$APP_NAME.app/Contents/MacOS" \
@@ -88,9 +96,24 @@ cat > "$APP_BUNDLE/Contents/Info.plist" <<EOF
 EOF
 
 ARCHIVE_PATH="$RELEASES_DIR/$APP_NAME-$VERSION.app"
+
+# Inside-out: nested Mach-O first, then the bundle seal.
+codesign --force --sign "$SIGN_IDENTITY" \
+  --identifier "$HELPER_IDENTIFIER" \
+  "$APP_BUNDLE/Contents/Library/LaunchServices/HibernateHelper"
+
+codesign --force --sign "$SIGN_IDENTITY" \
+  --identifier "$BUNDLE_IDENTIFIER" \
+  "$APP_BUNDLE"
+
+# Gate: this is exactly the check LaunchServices applies before it calls an app damaged.
+codesign --verify --deep --strict --verbose=2 "$APP_BUNDLE"
+
 rm -rf "$ARCHIVE_PATH"
-cp -R "$APP_BUNDLE" "$ARCHIVE_PATH"
+ditto "$APP_BUNDLE" "$ARCHIVE_PATH"
+codesign --verify --deep --strict "$ARCHIVE_PATH"
 
 echo "Built $APP_BUNDLE"
 echo "Archived $ARCHIVE_PATH"
+echo "Signed with: $SIGN_IDENTITY"
 echo "Open with: open \"$APP_BUNDLE\""
