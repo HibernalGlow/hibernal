@@ -21,7 +21,10 @@ final class HibernateProgressController {
             self.activeGeneration = generation
             self.onReady = onReady
             self.waitedSeconds = 0
-            self.showPanel(title: "Preparing hibernate…", detail: "Checking system status")
+            self.showPanel(
+                title: NSLocalizedString("Preparing hibernate…", comment: ""),
+                detail: NSLocalizedString("Checking system status", comment: "")
+            )
             self.evaluateAndContinue()
         }
     }
@@ -49,21 +52,28 @@ final class HibernateProgressController {
         let status = SleepAssertionMonitor.evaluate()
 
         if !status.blocked {
-            showPanel(title: "Hibernating…", detail: "Starting now")
+            showPanel(
+                title: NSLocalizedString("Hibernating…", comment: ""),
+                detail: NSLocalizedString("Starting now", comment: "")
+            )
             complete()
             return
         }
 
         waitedSeconds += 1
         let remaining = max(0, (status.suggestedWaitSeconds ?? maxWaitSeconds) - waitedSeconds)
-        let reason = status.reason ?? "Waiting for power cooldown"
+        let reason = status.reason ?? NSLocalizedString("Waiting for power cooldown", comment: "")
+        let countdown = String(format: NSLocalizedString("Starting in %ds", comment: ""), remaining)
         showPanel(
-            title: "Preparing hibernate…",
-            detail: "\(reason)\nStarting in \(remaining)s"
+            title: NSLocalizedString("Preparing hibernate…", comment: ""),
+            detail: "\(reason)\n\(countdown)"
         )
 
         if waitedSeconds >= (status.suggestedWaitSeconds ?? maxWaitSeconds) {
-            showPanel(title: "Hibernating…", detail: "Starting now")
+            showPanel(
+                title: NSLocalizedString("Hibernating…", comment: ""),
+                detail: NSLocalizedString("Starting now", comment: "")
+            )
             complete()
         }
     }
@@ -116,7 +126,11 @@ final class HibernateProgressController {
             detailLabel.maximumNumberOfLines = 3
             detailLabel.translatesAutoresizingMaskIntoConstraints = false
 
-            let cancelButton = NSButton(title: "Cancel", target: self, action: #selector(cancelPressed))
+            let cancelButton = NSButton(
+                title: NSLocalizedString("Cancel", comment: ""),
+                target: self,
+                action: #selector(cancelPressed)
+            )
             cancelButton.bezelStyle = .rounded
             cancelButton.translatesAutoresizingMaskIntoConstraints = false
 
@@ -169,7 +183,7 @@ enum SleepAssertionMonitor {
                 ?? parseElapsedRemainingSeconds(from: listed, near: "hibernate user wake", total: 120)
             return Status(
                 blocked: true,
-                reason: "Waiting for post-hibernate cooldown",
+                reason: NSLocalizedString("Waiting for post-hibernate cooldown", comment: ""),
                 suggestedWaitSeconds: min(timeout.map { $0 + 2 } ?? 120, 125)
             )
         }
@@ -178,7 +192,7 @@ enum SleepAssertionMonitor {
             let timeout = parseTimeoutSeconds(from: output, near: "acwakelinger")
             return Status(
                 blocked: true,
-                reason: "Waiting for AC power cooldown",
+                reason: NSLocalizedString("Waiting for AC power cooldown", comment: ""),
                 suggestedWaitSeconds: min(timeout.map { $0 + 2 } ?? 30, 45)
             )
         }
@@ -187,7 +201,7 @@ enum SleepAssertionMonitor {
             let timeout = parseTimeoutSeconds(from: output, near: "darkwakelinger")
             return Status(
                 blocked: true,
-                reason: "Waiting for sleep cooldown",
+                reason: NSLocalizedString("Waiting for sleep cooldown", comment: ""),
                 suggestedWaitSeconds: min(timeout.map { $0 + 2 } ?? 8, 10)
             )
         }

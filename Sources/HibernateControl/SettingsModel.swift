@@ -101,12 +101,14 @@ final class SettingsModel: ObservableObject {
             backing: .buffered,
             defer: false
         )
-        panel.title = "New Shortcut"
+        panel.title = NSLocalizedString("New Shortcut", comment: "")
         panel.isFloatingPanel = true
         panel.level = .floating
         panel.center()
 
-        let label = NSTextField(labelWithString: "Press the new key combination.\nEscape to cancel.")
+        let label = NSTextField(
+            labelWithString: NSLocalizedString("Press the new key combination.\nEscape to cancel.", comment: "")
+        )
         label.alignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         panel.contentView?.addSubview(label)

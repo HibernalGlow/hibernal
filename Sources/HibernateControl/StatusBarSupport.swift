@@ -1,7 +1,10 @@
 import AppKit
 
 enum StatusBarSupport {
-    static let toolTip = "Hibernate Control — click to open Settings, right-click for menu"
+    static let toolTip = NSLocalizedString(
+        "Hibernate Control — click to open Settings, right-click for menu",
+        comment: "Menu bar status item tooltip"
+    )
 
     static func configure(button: NSStatusBarButton, toolTip: String = toolTip) {
         if let image = NSImage(systemSymbolName: "moon.zzz.fill", accessibilityDescription: "Hibernate Control") {

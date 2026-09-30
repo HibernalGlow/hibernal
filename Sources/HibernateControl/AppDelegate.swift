@@ -179,11 +179,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
 
     private func buildStatusMenu() -> NSMenu {
         let menu = NSMenu()
-        addMenuAction(menu, title: "Open Settings", action: #selector(openSettings))
+        addMenuAction(menu, title: NSLocalizedString("Open Settings", comment: ""), action: #selector(openSettings))
         menu.addItem(.separator())
-        addMenuAction(menu, title: "Hibernate Now", action: #selector(hibernateNow))
+        addMenuAction(menu, title: NSLocalizedString("Hibernate Now", comment: ""), action: #selector(hibernateNow))
         menu.addItem(.separator())
-        addMenuAction(menu, title: "Quit", action: #selector(quit))
+        addMenuAction(menu, title: NSLocalizedString("Quit", comment: ""), action: #selector(quit))
         return menu
     }
 
@@ -228,11 +228,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
 
         let appMenu = NSMenu()
         appMenuItem.submenu = appMenu
-        let settingsItem = appMenu.addItem(withTitle: "Settings…", action: #selector(openSettings), keyEquivalent: ",")
+        let settingsItem = appMenu.addItem(
+            withTitle: NSLocalizedString("Settings…", comment: ""),
+            action: #selector(openSettings),
+            keyEquivalent: ","
+        )
         settingsItem.target = self
         appMenu.addItem(.separator())
         let hideItem = appMenu.addItem(
-            withTitle: "Hide to Menu Bar",
+            withTitle: NSLocalizedString("Hide to Menu Bar", comment: ""),
             action: #selector(hideToMenuBar),
             keyEquivalent: "q"
         )

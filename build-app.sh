@@ -60,6 +60,20 @@ if [[ -f "$ICON_SOURCE" ]]; then
     cp "$ICON_SOURCE" "$APP_BUNDLE/Contents/Resources/AppIcon.icns"
 fi
 
+# (N) = null glob: no .lproj directories must not abort the build.
+languages=(en)
+for lproj in "$SCRIPT_DIR"/Resources/*.lproj(N); do
+    ditto "$lproj" "$APP_BUNDLE/Contents/Resources/${lproj:t}"
+    lang=${${lproj:t}%.lproj}
+    [[ ${languages[(Ie)$lang]} -ne 0 ]] && continue
+    languages+=$lang
+done
+
+localization_entries=""
+for lang in $languages; do
+    localization_entries+="    <string>$lang</string>"$'\n'
+done
+
 cat > "$APP_BUNDLE/Contents/Info.plist" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -67,6 +81,9 @@ cat > "$APP_BUNDLE/Contents/Info.plist" <<EOF
 <dict>
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
+    <key>CFBundleLocalizations</key>
+    <array>
+${localization_entries}    </array>
     <key>CFBundleExecutable</key>
     <string>HibernateControl</string>
     <key>CFBundleIdentifier</key>

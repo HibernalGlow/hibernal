@@ -8,6 +8,15 @@
 		<data>
 		lp03NkOZ/TfncLpOh0PARedUCaM=
 		</data>
+		<key>Resources/zh-Hans.lproj/Localizable.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			ZXof3433dOijIa7ipeHrIM+AST4=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 	</dict>
 	<key>files2</key>
 	<dict>
@@ -24,6 +33,15 @@
 			<data>
 			lA0RKXDhMDF/FbD57HA+/kSDz0r934olY2VxDxxdi1k=
 			</data>
+		</dict>
+		<key>Resources/zh-Hans.lproj/Localizable.strings</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			vV5UiAe++dPDhmngv0O0Q4uLsiasTNZvXncaOH4Ako8=
+			</data>
+			<key>optional</key>
+			<true/>
 		</dict>
 	</dict>
 	<key>rules</key>
