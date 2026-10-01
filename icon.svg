@@ -1,76 +1,98 @@
 <svg xmlns="http://www.w3.org/2000/svg"
      width="1024" height="1024" viewBox="0 0 1024 1024"
      role="img" aria-labelledby="t d">
-  <title id="t">回弯双角与三角护目镜</title>
-  <desc id="d">白色圆角底板上的抽象徽记：两侧末端上翘的回弯角，下方横向三角护目镜，镜片镂空露出粉色瞳光。</desc>
+  <title id="t">紫发角色的 S 型双角与三角护目镜</title>
+  <desc id="d">冷白色圆角底板上的角色徽记：深蓝黑色、末端向上回钩的 S 型双角，搭配石墨色三角护目镜、银灰镜片、薰衣草紫反光与红色点缀。</desc>
 
   <defs>
-    <!-- MD3 色阶：同一紫色系的深浅分层 -->
-    <!-- 角：深靛紫  护目镜带：中紫  镜框：亮紫 -->
+    <!-- 角色主色：深蓝黑、石墨灰、薰衣草紫、珊瑚红。 -->
+    <linearGradient id="horn-gradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#131A2A"/>
+      <stop offset="0.55" stop-color="#202E49"/>
+      <stop offset="1" stop-color="#3B547D"/>
+    </linearGradient>
+    <linearGradient id="lens-gradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F0F1F2"/>
+      <stop offset="0.58" stop-color="#C6C9CF"/>
+      <stop offset="1" stop-color="#8E96A5"/>
+    </linearGradient>
+    <linearGradient id="strap-gradient" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#242A34"/>
+      <stop offset="0.5" stop-color="#363B46"/>
+      <stop offset="1" stop-color="#242A34"/>
+    </linearGradient>
 
-    <!-- 末端上翘的回弯角 -->
-    <path id="horn" d="
-      M 198 274
-      C 120 276, 70 232, 70 172
-      C 70 120, 104 84, 150 90
-      C 188 95, 206 128, 192 162
-      C 184 138, 166 126, 144 132
-      C 120 139, 118 174, 134 198
-      C 150 222, 174 236, 204 240
-      Z"/>
-    <!-- 角内侧高光条 -->
-    <path id="horn-hl" d="M 96 150 C 108 182 128 206 160 220"
-          fill="none" stroke-linecap="round"/>
+    <!-- 左角的中心线：从角根向外扫出，再回折并向上收成 S 型尾端。 -->
+    <path id="horn-line" d="
+      M 213 250
+      C 174 249, 136 237, 114 209
+      C 91 181, 87 148, 100 123
+      C 112 100, 138 91, 156 104
+      C 173 116, 175 138, 162 153
+      C 152 165, 138 164, 129 153
+      C 122 145, 125 133, 135 125
+      C 148 119, 164 106, 168 87"/>
 
-    <filter id="tile-shadow" x="-10%" y="-10%" width="120%" height="125%">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="12"/>
-      <feOffset dy="10" result="b"/>
-      <feFlood flood-color="#000" flood-opacity="0.22"/>
-      <feComposite in2="b" operator="in"/>
-      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
+    <!-- 角上的蓝灰高光，顺着角色原画的毛发方向走。 -->
+    <path id="horn-highlight" d="
+      M 188 239
+      C 148 233, 119 216, 104 190
+      C 93 171, 92 150, 99 132"/>
+
+    <!-- 三角镜片轮廓。 -->
+    <path id="lens-left" d="M 165 281 L 223 314 L 165 347
+      Q 162 349, 162 343 L 162 285 Q 162 279, 165 281 Z"/>
   </defs>
 
-  <!-- 底板：纯白，macOS 824×824 / 边距 100。删掉这一行即透明底 -->
+  <!-- 冷白底板，保留 macOS 图标的留白感。 -->
   <rect x="100" y="100" width="824" height="824" rx="185" ry="185"
-        fill="#FFFFFF" filter="url(#tile-shadow)"/>
+        fill="#F7F7F8"/>
 
-  <!-- 徽记整体居中放大 -->
   <g transform="translate(512 512) scale(1.32) translate(-256 -236)">
-
-    <!-- 镜片镂空处的粉色瞳光（垫在最底层） -->
-    <g fill="#F0489E">
-      <path d="M 165 281 L 223 314 L 165 347 Q 162 349, 162 343 L 162 285 Q 162 279, 165 281 Z"/>
-      <path d="M 347 281 L 289 314 L 347 347 Q 350 349, 350 343 L 350 285 Q 350 279, 347 281 Z"/>
+    <!-- 双角外轮廓，使用粗线而非圆环，让 S 型转折和上翘尾端更清楚。 -->
+    <g fill="none" stroke="#0D1422" stroke-width="54" stroke-linecap="round" stroke-linejoin="round">
+      <use href="#horn-line"/>
+      <use href="#horn-line" transform="translate(512 0) scale(-1 1)"/>
+    </g>
+    <g fill="none" stroke="url(#horn-gradient)" stroke-width="40" stroke-linecap="round" stroke-linejoin="round">
+      <use href="#horn-line"/>
+      <use href="#horn-line" transform="translate(512 0) scale(-1 1)"/>
+    </g>
+    <g fill="none" stroke="#697DAB" stroke-width="7" stroke-linecap="round" opacity="0.85">
+      <use href="#horn-highlight"/>
+      <use href="#horn-highlight" transform="translate(512 0) scale(-1 1)"/>
     </g>
 
-    <!-- 双角：深靛紫 -->
-    <g fill="#2E2552">
-      <use href="#horn"/>
-      <use href="#horn" transform="translate(512 0) scale(-1 1)"/>
-    </g>
-    <!-- 角高光：中紫 -->
-    <g stroke="#8A6FE0" stroke-width="6">
-      <use href="#horn-hl"/>
-      <use href="#horn-hl" transform="translate(512 0) scale(-1 1)"/>
-    </g>
-
-    <!-- 护目镜带：中紫 -->
-    <path fill="#6A4BC8" d="
+    <!-- 护目镜带：石墨黑为主，加入角色服装里的珊瑚红结构件。 -->
+    <path fill="url(#strap-gradient)" d="
       M 158 257 Q 139 247, 139 270
       L 139 358 Q 139 381, 158 371
       L 239 328 Q 256 318, 273 328
       L 354 371 Q 373 381, 373 358
       L 373 270 Q 373 247, 354 257
       L 273 300 Q 256 310, 239 300 Z"/>
+    <path fill="#E44936" d="M 150 266 L 175 252 L 186 258 L 160 273 Z"/>
+    <path fill="#E44936" d="M 362 266 L 337 252 L 326 258 L 352 273 Z"/>
+    <path fill="#F2E900" d="M 144 286 L 151 282 L 151 307 L 144 311 Z" opacity="0.9"/>
+    <path fill="#F2E900" d="M 368 286 L 361 282 L 361 307 L 368 311 Z" opacity="0.9"/>
 
-    <!-- 镜框：亮紫（只描边，露出里面的粉色镂空） -->
-    <g fill="none" stroke="#B9A1F5" stroke-width="10" stroke-linejoin="round">
-      <path d="M 165 281 L 223 314 L 165 347 Q 162 349, 162 343 L 162 285 Q 162 279, 165 281 Z"/>
-      <path d="M 347 281 L 289 314 L 347 347 Q 350 349, 350 343 L 350 285 Q 350 279, 347 281 Z"/>
+    <!-- 银灰镜片，外圈为接近角色头盔的深石墨色。 -->
+    <g fill="url(#lens-gradient)" stroke="#151A23" stroke-width="13" stroke-linejoin="round">
+      <use href="#lens-left"/>
+      <use href="#lens-left" transform="translate(512 0) scale(-1 1)"/>
+    </g>
+    <!-- 薰衣草紫的镜面反光，呼应角色头发和瞳色。 -->
+    <g fill="#B496D8" opacity="0.78">
+      <path d="M 171 292 L 201 309 L 171 326 Z"/>
+      <path d="M 341 292 L 311 309 L 341 326 Z"/>
+    </g>
+    <g fill="#FFFFFF" opacity="0.65">
+      <path d="M 176 288 L 187 294 L 176 301 Z"/>
+      <path d="M 336 288 L 325 294 L 336 301 Z"/>
     </g>
 
-    <!-- 中央连接点：红色点缀 -->
-    <circle cx="256" cy="314" r="9" fill="#E5384F"/>
+    <!-- 中央红色连接件，改为角色装备中的珊瑚红。 -->
+    <circle cx="256" cy="314" r="12" fill="#E44936" stroke="#171B24" stroke-width="4"/>
+    <circle cx="256" cy="314" r="4" fill="#FF9A83"/>
   </g>
 </svg>
