@@ -58,6 +58,21 @@ jobs:
           sha256: `PLACEHOLDER_SHA`
           NOTES
           perl -pi -e "s/PLACEHOLDER_SHA/$SHA256/" notes.md
-          gh release create "$GITHUB_REF_NAME" "$DMG" \
-            --title "Hibernal $VERSION" \
-            --notes-file notes.md
+          # The first run of this workflow died on a transient "error connecting to
+          # api.github.com" from the runner, so publishing retries. A half-done attempt
+          # leaves the release created but the asset missing, so each try falls back to
+          # uploading onto the existing release, and the loop ends by asserting the
+          # asset is really attached -- a green job must not mean "probably published".
+          for attempt in 1 2 3; do
+              if gh release create "$GITHUB_REF_NAME" "$DMG" \
+                   --title "Hibernal $VERSION" \
+                   --notes-file notes.md; then
+                  break
+              fi
+              echo "attempt $attempt: create failed, trying upload onto any existing release"
+              gh release upload "$GITHUB_REF_NAME" "$DMG" --clobber && break
+              sleep $(( attempt * 20 ))
+          done
+          attached=$(gh release view "$GITHUB_REF_NAME" --json assets --jq '.assets | map(.name) | index("Hibernal-'"$VERSION"'.dmg") != null')
+          echo "asset attached: $attached"
+          [ "$attached" = "true" ]
