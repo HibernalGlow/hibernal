@@ -1,0 +1,63 @@
+name: build and release
+
+on:
+  push:
+    tags:
+      - "v*"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  # One job does build and release so the DMG never has to cross between runners.
+  # Tag pushes publish; branches and PRs only build (the codesign gate still runs).
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build universal app and DMG
+        run: ./build-dmg.sh
+
+      - name: Collect asset facts
+        id: asset
+        run: |
+          version=$(cat VERSION)
+          dmg="releases/Hibernal-${version}.dmg"
+          sha=$(shasum -a 256 "$dmg" | cut -d' ' -f1)
+          archs=$(lipo -archs "dist/Hibernal.app/Contents/MacOS/Hibernal")
+          {
+            echo "dmg=$dmg"
+            echo "sha256=$sha"
+            echo "version=$version"
+          } >> "$GITHUB_OUTPUT"
+          {
+            echo "### Hibernal ${version}"
+            echo "- file: \`$(basename "$dmg")\`"
+            echo "- sha256: \`${sha}\`"
+            echo "- architectures: \`${archs}\`"
+            echo "- signature: ad-hoc, not notarized"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publish GitHub release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DMG: ${{ steps.asset.outputs.dmg }}
+          VERSION: ${{ steps.asset.outputs.version }}
+          SHA256: ${{ steps.asset.outputs.sha256 }}
+        run: |
+          cat > notes.md <<'NOTES'
+          Ad-hoc signed and **not notarized** (no Developer ID), so a quarantined copy needs
+          one manual approval: **System Settings → Privacy & Security → Open Anyway**.
+          `brew install --cask hibernalglow/tap/hibernal` applies quarantine too, so the same
+          override is needed there once per install.
+
+          sha256: `PLACEHOLDER_SHA`
+          NOTES
+          perl -pi -e "s/PLACEHOLDER_SHA/$SHA256/" notes.md
+          gh release create "$GITHUB_REF_NAME" "$DMG" \
+            --title "Hibernal $VERSION" \
+            --notes-file notes.md
