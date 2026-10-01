@@ -14,7 +14,7 @@ Or download `Hibernal-<version>.dmg` from [the latest release](https://github.co
 
 Builds are **ad-hoc signed and not notarized** (no Developer ID). That is enough for the signature to validate — `codesign --verify --deep --strict` passes — so Finder will not call the app damaged, but a quarantined copy still needs one manual approval: **System Settings → Privacy & Security → Open Anyway**. Homebrew also installs with the quarantine flag, so the same override applies once after every install or upgrade.
 
-On first hibernate macOS asks for your password **once** to install the privileged helper (`com.hibernal.helper`). After that, hibernates are passwordless.
+On first hibernate macOS asks for your password **once** to install the privileged helper (`com.hibernal.helper`). After that hibernates are passwordless — **including across app updates**, because readiness compares the installed helper's bytes with the one this build ships, so the prompt only comes back when the helper itself actually changes.
 
 ## What it does
 
