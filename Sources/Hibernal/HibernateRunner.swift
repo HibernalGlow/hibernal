@@ -2,7 +2,7 @@ import Foundation
 
 enum HibernateRunner {
     private static let logPath = FileManager.default.homeDirectoryForCurrentUser
-        .appendingPathComponent("Library/Logs/HibernateControl/hibernate.log")
+        .appendingPathComponent("Library/Logs/Hibernal/hibernate.log")
 
     private static var generation = 0
     private static var scriptRunning = false
@@ -11,15 +11,15 @@ enum HibernateRunner {
         DispatchQueue.main.async {
             generation += 1
             let currentGeneration = generation
-            NSLog("Hibernate Control: hibernate requested (generation \(currentGeneration))")
+            NSLog("Hibernal: hibernate requested (generation \(currentGeneration))")
 
             HibernateProgressController.shared.begin(generation: currentGeneration) {
                 guard currentGeneration == generation else {
-                    NSLog("Hibernate Control: hibernate cancelled (generation \(currentGeneration) superseded)")
+                    NSLog("Hibernal: hibernate cancelled (generation \(currentGeneration) superseded)")
                     return
                 }
                 guard !scriptRunning else {
-                    NSLog("Hibernate Control: hibernate skipped (script already running)")
+                    NSLog("Hibernal: hibernate skipped (script already running)")
                     return
                 }
                 runHibernate(
@@ -33,7 +33,7 @@ enum HibernateRunner {
 
     static func cancelPending() {
         generation += 1
-        NSLog("Hibernate Control: pending hibernate cancelled")
+        NSLog("Hibernal: pending hibernate cancelled")
     }
 
     private static func runHibernate(
@@ -53,18 +53,18 @@ enum HibernateRunner {
                 scriptRunning = false
                 guard generation == self.generation else { return }
                 if success { return }
-                NSLog("Hibernate Control: helper hibernate failed, falling back to admin prompt")
+                NSLog("Hibernal: helper hibernate failed, falling back to admin prompt")
                 runViaAdmin(scriptPath: scriptPath)
             }
         } catch {
             scriptRunning = false
-            NSLog("Hibernate Control: failed to prepare hibernate script: \(error)")
+            NSLog("Hibernal: failed to prepare hibernate script: \(error)")
         }
     }
 
     private static func supportDirectory() throws -> URL {
         let supportDir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("HibernateControl", isDirectory: true)
+            .appendingPathComponent("Hibernal", isDirectory: true)
         try FileManager.default.createDirectory(at: supportDir, withIntermediateDirectories: true)
         return supportDir
     }
@@ -145,9 +145,16 @@ enum HibernateRunner {
         \(ejectBlock)
         apply_hibernate_settings
         pmset -g custom | grep hibernatemode >> "$LOG" 2>&1 || true
+        HIB_BEFORE=$(sysctl -n kern.hibernatecount 2>/dev/null || echo "")
         sleep 2
         pmset sleepnow >> "$LOG" 2>&1
         sleep 15
+        HIB_AFTER=$(sysctl -n kern.hibernatecount 2>/dev/null || echo "")
+        if [[ -n "$HIB_BEFORE" && -n "$HIB_AFTER" && "$HIB_AFTER" -le "$HIB_BEFORE" ]]; then
+            echo "=== $(date) sleepnow did not hibernate (hibernatecount $HIB_BEFORE -> $HIB_AFTER), leaving mode 25 ===" >> "$LOG"
+            pkill -SIGCONT grok-macos-aarch64 2>/dev/null || true
+            exit 0
+        fi
         \(restoreBlock)
         echo "=== $(date) hibernate end ===" >> "$LOG"
         """
@@ -176,10 +183,10 @@ enum HibernateRunner {
             var errorInfo: NSDictionary?
             NSAppleScript(source: appleScriptSource)?.executeAndReturnError(&errorInfo)
             if let errorInfo {
-                NSLog("Hibernate Control: hibernate failed: \(errorInfo)")
+                NSLog("Hibernal: hibernate failed: \(errorInfo)")
             }
         } catch {
-            NSLog("Hibernate Control: hibernate setup failed: \(error)")
+            NSLog("Hibernal: hibernate setup failed: \(error)")
         }
     }
 }

@@ -2,7 +2,7 @@ import Foundation
 
 enum PowerSettingsRunner {
     private static let logPath = FileManager.default.homeDirectoryForCurrentUser
-        .appendingPathComponent("Library/Logs/HibernateControl/power.log")
+        .appendingPathComponent("Library/Logs/Hibernal/power.log")
 
     static func setKeepAwakeOnPowerAdapter(_ enabled: Bool) {
         DispatchQueue.main.async {
@@ -13,7 +13,7 @@ enum PowerSettingsRunner {
                     appendLog(label: label, command: "/usr/bin/pmset -c sleep \(minutes)", success: true)
                     return
                 }
-                NSLog("Hibernate Control: helper \(label) failed, falling back to admin prompt")
+                NSLog("Hibernal: helper \(label) failed, falling back to admin prompt")
                 runAdminCommand(
                     enabled ? "/usr/bin/pmset -c sleep 0" : "/usr/bin/pmset -c sleep 10",
                     label: label
@@ -25,7 +25,7 @@ enum PowerSettingsRunner {
     static func openTerminalWithPmsetStatus() {
         do {
             let supportDir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-                .appendingPathComponent("HibernateControl", isDirectory: true)
+                .appendingPathComponent("Hibernal", isDirectory: true)
             try FileManager.default.createDirectory(at: supportDir, withIntermediateDirectories: true)
 
             let scriptURL = supportDir.appendingPathComponent("pmset-check.command")
@@ -49,7 +49,7 @@ enum PowerSettingsRunner {
             process.arguments = ["-a", "Terminal", scriptURL.path]
             try process.run()
         } catch {
-            NSLog("Hibernate Control: failed to open Terminal for pmset: \(error)")
+            NSLog("Hibernal: failed to open Terminal for pmset: \(error)")
         }
     }
 
@@ -70,7 +70,7 @@ enum PowerSettingsRunner {
                 try entry.write(to: logPath, atomically: true, encoding: .utf8)
             }
         } catch {
-            NSLog("Hibernate Control: failed to write power log: \(error)")
+            NSLog("Hibernal: failed to write power log: \(error)")
         }
     }
 
@@ -83,11 +83,11 @@ enum PowerSettingsRunner {
             let logged = "echo \"=== $(date) \(label) ===\"; \(command) >> '\(logPath.path)' 2>&1"
             PrivilegedHelperManager.runAdminCommand(logged, label: label) { success in
                 if !success {
-                    NSLog("Hibernate Control: \(label) admin fallback failed")
+                    NSLog("Hibernal: \(label) admin fallback failed")
                 }
             }
         } catch {
-            NSLog("Hibernate Control: \(label) setup failed: \(error)")
+            NSLog("Hibernal: \(label) setup failed: \(error)")
         }
     }
 }

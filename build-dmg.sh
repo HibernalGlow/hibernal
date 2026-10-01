@@ -2,7 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR=${0:a:h}
-APP_NAME="Hibernate Control"
+APP_NAME="Hibernal"
 VERSION=$(cat "$SCRIPT_DIR/VERSION")
 DMG_NAME="$APP_NAME-$VERSION.dmg"
 STAGING_DIR="$SCRIPT_DIR/build/dmg-staging"

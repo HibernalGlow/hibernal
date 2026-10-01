@@ -108,7 +108,7 @@ final class HibernateProgressController {
                 backing: .buffered,
                 defer: false
             )
-            panel.title = "Hibernate Control"
+            panel.title = "Hibernal"
             panel.isFloatingPanel = true
             panel.level = .floating
             panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]

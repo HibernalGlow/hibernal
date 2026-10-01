@@ -1,10 +1,10 @@
 import Foundation
 
-private let serviceName = "com.hibernatecontrol.helper"
+private let serviceName = "com.hibernal.helper"
 private let allowedScriptName = "hibernate.sh"
 private let allowedACSleepMinutes: Set<Int> = [0, 10]
 
-final class HelperImplementation: NSObject, HibernateHelperProtocol {
+final class HelperImplementation: NSObject, HibernalHelperProtocol {
     func executeHibernateScript(at path: String, with reply: @escaping (Bool, String?) -> Void) {
         guard isAllowedHibernateScript(path) else {
             reply(false, "Rejected script path")
@@ -52,13 +52,13 @@ final class HelperImplementation: NSObject, HibernateHelperProtocol {
 
     private func isAllowedHibernateScript(_ path: String) -> Bool {
         let standardized = URL(fileURLWithPath: path).standardized.path
-        return standardized.hasSuffix("/HibernateControl/\(allowedScriptName)")
+        return standardized.hasSuffix("/Hibernal/\(allowedScriptName)")
     }
 }
 
 final class HelperDelegate: NSObject, NSXPCListenerDelegate {
     func listener(_ listener: NSXPCListener, shouldAcceptNewConnection newConnection: NSXPCConnection) -> Bool {
-        newConnection.exportedInterface = NSXPCInterface(with: HibernateHelperProtocol.self)
+        newConnection.exportedInterface = NSXPCInterface(with: HibernalHelperProtocol.self)
         newConnection.exportedObject = HelperImplementation()
         newConnection.resume()
         return true

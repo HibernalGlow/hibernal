@@ -1,27 +1,29 @@
-# Hibernate Control
+# Hibernal
 
 A native macOS menu bar app that triggers **deep hibernate on demand** — independent of closing the lid. Built from a custom `pmset` workflow (originally an iCloud Shortcut) and packaged as a proper Swift app with settings, a global keyboard shortcut, and a one-time privileged helper.
 
-![Hibernate Control app icon](Resources/AppIcon-1024.png)
+![Hibernal app icon](Resources/AppIcon-1024.png)
+
+## Install
+
+```bash
+brew install --cask hibernalglow/tap/hibernal
+```
+
+Or download `Hibernal-<version>.dmg` from [the latest release](https://github.com/HibernalGlow/hibernal/releases/latest), mount it and drag **Hibernal** to **Applications**.
+
+Builds are **ad-hoc signed and not notarized** (no Developer ID). That is enough for the signature to validate — `codesign --verify --deep --strict` passes — so Finder will not call the app damaged, but a quarantined copy still needs one manual approval: **System Settings → Privacy & Security → Open Anyway**. Homebrew also installs with the quarantine flag, so the same override applies once after every install or upgrade.
+
+On first hibernate macOS asks for your password **once** to install the privileged helper (`com.hibernal.helper`). After that, hibernates are passwordless.
 
 ## What it does
 
 - **Hibernate now** via global keyboard shortcut or menu bar
 - **Normal lid-close sleep** stays separate (optional restore to `hibernatemode 3` after wake)
 - **One-time password** to install a privileged helper — no password on every hibernate after that
-- **Countdown popup** when macOS AC power cooldown (`acwakelinger`) blocks immediate re-hibernate
+- **Countdown popup** when a sleep assertion blocks immediate re-hibernate
 - **Menu bar moon icon** keeps the shortcut alive after you close Settings
-
-## Download
-
-**[Latest release (DMG)](https://github.com/PreparedToBeReckless/hibernate-control/releases/latest)**
-
-1. Download `Hibernate Control-x.x.x.dmg`
-2. Open the DMG and drag **Hibernate Control** to **Applications**
-3. Open the app from Applications
-4. Configure settings, then close the window — the app stays in the menu bar
-
-On first hibernate, macOS will ask for your password **once** to install the privileged helper. After that, hibernates are passwordless — including across app updates, since the app only asks again when the helper binary itself changes.
+- English and Simplified Chinese — the app follows the system language, and `CFBundleLocalizations` lists both so you can also pin one language to this app alone in System Settings
 
 ## Settings
 
@@ -47,72 +49,63 @@ When triggered, the app:
 
 1. Pauses known sleep-blocking processes (e.g. Grok agent, AMP agents)
 2. Sets `hibernatemode 25` and disables standby/power nap
-3. Waits for AC power cooldown if needed (with on-screen countdown)
+3. Waits out a blocking sleep assertion if one is listed (with on-screen countdown)
 4. Runs `pmset sleepnow`
 5. Optionally restores `hibernatemode 3` after wake
 
-Logs: `~/Library/Logs/HibernateControl/hibernate.log`
+Because the helper runs the whole script, everything above happens as root from one
+launch; if `sleepnow` did not actually hibernate, the script leaves `hibernatemode` at 25
+and logs `sleepnow did not hibernate (hibernatecount N -> N)` instead of pretending the
+restore happened.
+
+Logs: `~/Library/Logs/Hibernal/hibernate.log` · support files: `~/Library/Application Support/Hibernal/`
 
 ## Requirements
 
 - macOS 13.0 or later
-- Apple Silicon or Intel Mac
+- Universal binary: Apple Silicon and Intel in one DMG
 
 ## Build from source
 
 ```bash
-git clone https://github.com/PreparedToBeReckless/hibernate-control.git
-cd hibernate-control
-
-# Build app bundle
-./build-app.sh
-
-# Build DMG installer
-./build-dmg.sh
+git clone https://github.com/HibernalGlow/hibernal.git
+cd hibernal
+./build-dmg.sh          # or ./build-app.sh for just the bundle
 ```
 
-Outputs:
+Outputs: `dist/Hibernal.app` and `releases/Hibernal-<version>.dmg` (both gitignored; release assets come from CI).
 
-- `dist/Hibernate Control.app` — latest build
-- `releases/Hibernate Control-<version>.app` — archived build
-- `releases/Hibernate Control-<version>.dmg` — installer
+`build-app.sh` compiles every arch in `ARCHS` (default `arm64 x86_64`), `lipo`s them together, signs inside-out (helper first, then the bundle seal) and fails the build if `codesign --verify --deep --strict` rejects the result. Pass `SIGN_IDENTITY="Developer ID Application: …"` to sign with a real certificate.
 
-Both scripts ad-hoc sign their output and fail the build if `codesign --verify --deep --strict` rejects it. Pass `SIGN_IDENTITY` to sign with a real certificate instead.
-
-## Project structure
-
-```
-Sources/HibernateControl/   Main app (settings UI, menu bar, hotkey)
-Sources/HibernateHelper/    Privileged helper (root pmset execution)
-Sources/Shared/             XPC protocol shared by app and helper
-Resources/                  App icon (.icns)
-build-app.sh                Compile and bundle the app
-build-dmg.sh                Package DMG for distribution
-```
+Pushing a `v*` tag runs `.github/workflows/release.yml`, which builds, verifies and publishes the DMG as a release asset (and prints its sha256 in the job summary for the Homebrew cask).
 
 ## Troubleshooting
 
-**Shortcut not working after boot**  
+**Shortcut not working after boot**
 Wait ~30 seconds after login, or open Settings once and close it. The app re-registers the hotkey on a schedule after login launch.
 
-**Second hibernate only sleeps (not full hibernate)**  
-macOS enforces a cooldown after wake before another full hibernate will stick. On battery this is about **2 minutes** (`hibernate user wake`); on AC it is shorter (`acwakelinger`). The countdown popup waits for this automatically — let it finish, or cancel and retry later.
+**"Second hibernate only sleeps"**
+Measured on an M-series Mac: after waking from hibernate, `powerd` holds a `hibernate user wake` assertion (`UserIsActive`) for **600 s**, and this app waits at most **125 s** before forcing `pmset sleepnow` anyway. Inside that window a forced sleep has been observed both hibernating and not hibernating, so the countdown is not a guarantee — check `pmset -g log` for `Wake from Hibernate` versus a plain sleep to see which you got.
 
-**Privileged helper not installed**  
+**Machine wakes itself ~10 minutes after hibernating**
+That is not this app. On every sleep `powerd` schedules a user-invisible wake alarm ~590 s out, registered by `AppleCredentialManagerDaemon` (`com.apple.alarm.user-invisible-com.apple.acmd.alarm`). It is not shown by `pmset -g sched` while pending, `pmset schedule cancelall` does not remove it, and disabling AppleCredentialManager is not advisable — it is a system credential/TPM-facing daemon.
+
+**Privileged helper not installed**
 Check Settings for the orange/green helper status. First hibernate prompts for your password once to install.
 
-**"Hibernate Control is damaged" / "cannot be verified"**  
-Builds are ad-hoc signed (`codesign --verify --deep --strict` passes), so drag-to-Applications works, but a *quarantined* copy still needs one approval on a machine with Gatekeeper enabled: **System Settings → Privacy & Security → Open Anyway**. Any copy built before the signing step is genuinely invalid (no resource seal) and Finder reports it damaged regardless of approval — rebuild from this version of `build-dmg.sh`.
+**Move app to Applications**
+Use **Quit App** before copying to `/Applications`, then toggle **Start on login** off and on to refresh the Launch Agent path.
 
-To remove the approval step for everyone, sign with a paid Apple Developer ID and notarize:
+## Renaming note
+
+Version 2.0.0 renamed the app from *Hibernate Control* to **Hibernal**, including the bundle identifier (`com.hibernal.app`), the helper (`com.hibernal.helper`), the login item (`com.hibernal.agent`) and the settings domain. Any pre-2.0.0 copy keeps its old helper and login item installed; remove them once the new version is working:
 
 ```bash
-SIGN_IDENTITY="Developer ID Application: Your Name (TEAMID)" ./build-dmg.sh
-xcrun notarytool submit "releases/Hibernate Control-$(cat VERSION).dmg" --keychain-profile notary --wait
+sudo launchctl bootout system/com.hibernatecontrol.helper
+sudo rm /Library/LaunchDaemons/com.hibernatecontrol.helper.plist \
+        /Library/PrivilegedHelperTools/com.hibernatecontrol.helper \
+        ~/Library/LaunchAgents/com.hibernatecontrol.agent.plist
 ```
-
-**Move app to Applications**  
-Use **Quit App** before copying to `/Applications`, then toggle **Start on login** off and on to refresh the Launch Agent path.
 
 ## License
 

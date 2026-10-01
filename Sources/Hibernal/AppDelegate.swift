@@ -81,7 +81,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             presentSettingsWindow()
         }
 
-        NSLog("Hibernate Control: started (pid \(ProcessInfo.processInfo.processIdentifier), login=\(loginLaunch))")
+        NSLog("Hibernal: started (pid \(ProcessInfo.processInfo.processIdentifier), login=\(loginLaunch))")
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
@@ -127,7 +127,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     private func createSettingsWindow() {
         let hosting = NSHostingController(rootView: SettingsView())
         let window = NSWindow(contentViewController: hosting)
-        window.title = "Hibernate Control"
+        window.title = "Hibernal"
         window.styleMask = [.titled, .closable, .miniaturizable]
         window.setContentSize(NSSize(width: 480, height: 580))
         window.center()
@@ -157,16 +157,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             rewireStatusItemButton()
         }
         registerHotKey()
-        ProcessInfo.processInfo.disableAutomaticTermination("Hibernate Control background service")
+        ProcessInfo.processInfo.disableAutomaticTermination("Hibernal background service")
         ProcessInfo.processInfo.disableSuddenTermination()
-        NSLog("Hibernate Control: background service started")
+        NSLog("Hibernal: background service started")
     }
 
     private func stopBackgroundService() {
         hotKeyManager?.apply(binding: HotKeyBinding(keyCode: 0, modifierFlags: 0))
         removeStatusItem()
-        ProcessInfo.processInfo.enableAutomaticTermination("Hibernate Control background service")
-        NSLog("Hibernate Control: background service stopped")
+        ProcessInfo.processInfo.enableAutomaticTermination("Hibernal background service")
+        NSLog("Hibernal: background service stopped")
     }
 
     private func removeStatusItem() {
@@ -189,7 +189,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
 
     private func installStatusItem() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
-        statusItem?.autosaveName = "com.hibernatecontrol.statusitem"
+        statusItem?.autosaveName = "com.hibernal.statusitem"
         guard statusItem != nil else { return }
         statusMenu = buildStatusMenu()
         rewireStatusItemButton()
@@ -328,7 +328,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     }
 
     private func handleSystemWake() {
-        NSLog("Hibernate Control: system wake detected")
+        NSLog("Hibernal: system wake detected")
         resetSettingsWindow()
         guard BackgroundAgentManager.isBackgroundServiceActive() else { return }
 

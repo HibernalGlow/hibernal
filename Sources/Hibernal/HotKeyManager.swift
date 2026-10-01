@@ -29,7 +29,7 @@ final class HotKeyManager {
                receivedID.signature == manager.hotKeyID.signature,
                receivedID.id == manager.hotKeyID.id {
                 DispatchQueue.main.async {
-                    NSLog("Hibernate Control: hotkey pressed")
+                    NSLog("Hibernal: hotkey pressed")
                     manager.callback()
                 }
             }
@@ -69,11 +69,11 @@ final class HotKeyManager {
         if status == noErr {
             hotKeyRef = ref
             NSLog(
-                "Hibernate Control: registered hotkey key=\(currentBinding.keyCode) modifiers=\(modifiers) (\(HotKeyFormatter.displayString(for: currentBinding)))"
+                "Hibernal: registered hotkey key=\(currentBinding.keyCode) modifiers=\(modifiers) (\(HotKeyFormatter.displayString(for: currentBinding)))"
             )
         } else {
             NSLog(
-                "Hibernate Control: failed to register hotkey key=\(currentBinding.keyCode) modifiers=\(modifiers) status=\(status)"
+                "Hibernal: failed to register hotkey key=\(currentBinding.keyCode) modifiers=\(modifiers) status=\(status)"
             )
         }
     }
@@ -93,7 +93,7 @@ final class HotKeyManager {
             &handlerRef
         )
         if status != noErr {
-            NSLog("Hibernate Control: InstallEventHandler failed status=\(status)")
+            NSLog("Hibernal: InstallEventHandler failed status=\(status)")
         }
     }
 

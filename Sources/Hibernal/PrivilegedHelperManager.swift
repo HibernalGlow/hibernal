@@ -2,8 +2,8 @@ import CryptoKit
 import Foundation
 
 enum PrivilegedHelperManager {
-    static let serviceName = "com.hibernatecontrol.helper"
-    private static let helperLabel = "com.hibernatecontrol.helper"
+    static let serviceName = "com.hibernal.helper"
+    private static let helperLabel = "com.hibernal.helper"
     private static let installedPath = "/Library/PrivilegedHelperTools/\(helperLabel)"
     private static let plistPath = "/Library/LaunchDaemons/\(helperLabel).plist"
 
@@ -42,15 +42,15 @@ enum PrivilegedHelperManager {
             }
             withHelper { helper, error, close in
                 guard let helper else {
-                    NSLog("Hibernate Control: helper unavailable: \(error ?? "unknown error")")
+                    NSLog("Hibernal: helper unavailable: \(error ?? "unknown error")")
                     completion(false)
                     return
                 }
                 helper.executeHibernateScript(at: path) { success, message in
                     if let message, !message.isEmpty {
-                        NSLog("Hibernate Control: helper hibernate error: \(message)")
+                        NSLog("Hibernal: helper hibernate error: \(message)")
                     } else if success {
-                        NSLog("Hibernate Control: hibernate script launched via helper")
+                        NSLog("Hibernal: hibernate script launched via helper")
                     }
                     close()
                     completion(success)
@@ -67,13 +67,13 @@ enum PrivilegedHelperManager {
             }
             withHelper { helper, error, close in
                 guard let helper else {
-                    NSLog("Hibernate Control: helper unavailable: \(error ?? "unknown error")")
+                    NSLog("Hibernal: helper unavailable: \(error ?? "unknown error")")
                     completion(false)
                     return
                 }
                 helper.setACSleepTimer(minutes: minutes) { success, message in
                     if let message, !message.isEmpty {
-                        NSLog("Hibernate Control: helper pmset error: \(message)")
+                        NSLog("Hibernal: helper pmset error: \(message)")
                     }
                     close()
                     completion(success)
@@ -91,7 +91,7 @@ enum PrivilegedHelperManager {
             var errorInfo: NSDictionary?
             NSAppleScript(source: appleScriptSource)?.executeAndReturnError(&errorInfo)
             if let errorInfo {
-                NSLog("Hibernate Control: \(label) failed: \(errorInfo)")
+                NSLog("Hibernal: \(label) failed: \(errorInfo)")
                 completion(false)
             } else {
                 completion(true)
@@ -119,18 +119,18 @@ enum PrivilegedHelperManager {
 
     private static func installHelper(completion: @escaping (Bool) -> Void) {
         guard let helperSource = embeddedHelperURL()?.path else {
-            NSLog("Hibernate Control: embedded helper binary not found in app bundle")
+            NSLog("Hibernal: embedded helper binary not found in app bundle")
             completion(false)
             return
         }
 
         let plistContents = launchdPlistContents()
         let tempPlist = FileManager.default.temporaryDirectory
-            .appendingPathComponent("com.hibernatecontrol.helper.plist")
+            .appendingPathComponent("com.hibernal.helper.plist")
         do {
             try plistContents.write(to: tempPlist, atomically: true, encoding: .utf8)
         } catch {
-            NSLog("Hibernate Control: failed to stage helper plist: \(error)")
+            NSLog("Hibernal: failed to stage helper plist: \(error)")
             completion(false)
             return
         }
@@ -154,7 +154,7 @@ enum PrivilegedHelperManager {
 
     private static func embeddedHelperURL() -> URL? {
         let url = Bundle.main.bundleURL
-            .appendingPathComponent("Contents/Library/LaunchServices/HibernateHelper")
+            .appendingPathComponent("Contents/Library/LaunchServices/HibernalHelper")
         return FileManager.default.fileExists(atPath: url.path) ? url : nil
     }
 
@@ -193,13 +193,13 @@ enum PrivilegedHelperManager {
     }
 
     private static func withHelper(
-        _ block: @escaping (HibernateHelperProtocol?, String?, @escaping () -> Void) -> Void
+        _ block: @escaping (HibernalHelperProtocol?, String?, @escaping () -> Void) -> Void
     ) {
         let connection = NSXPCConnection(machServiceName: serviceName, options: .privileged)
-        connection.remoteObjectInterface = NSXPCInterface(with: HibernateHelperProtocol.self)
+        connection.remoteObjectInterface = NSXPCInterface(with: HibernalHelperProtocol.self)
 
         connection.interruptionHandler = {
-            NSLog("Hibernate Control: helper XPC connection interrupted")
+            NSLog("Hibernal: helper XPC connection interrupted")
         }
 
         connection.resume()
@@ -210,7 +210,7 @@ enum PrivilegedHelperManager {
 
         guard let proxy = connection.remoteObjectProxyWithErrorHandler({ error in
             block(nil, error.localizedDescription, {})
-        }) as? HibernateHelperProtocol else {
+        }) as? HibernalHelperProtocol else {
             close()
             block(nil, "Failed to create helper proxy", {})
             return

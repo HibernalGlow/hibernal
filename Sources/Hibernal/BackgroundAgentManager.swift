@@ -2,13 +2,13 @@ import AppKit
 import Foundation
 
 enum BackgroundAgentManager {
-    static let settingsChangedNotification = Notification.Name("com.hibernatecontrol.settingsChanged")
-    static let showSettingsNotification = Notification.Name("com.hibernatecontrol.showSettings")
-    static let hideSettingsNotification = Notification.Name("com.hibernatecontrol.hideSettings")
-    static let stopBackgroundServiceNotification = Notification.Name("com.hibernatecontrol.stopBackgroundService")
-    static let startBackgroundServiceNotification = Notification.Name("com.hibernatecontrol.startBackgroundService")
+    static let settingsChangedNotification = Notification.Name("com.hibernal.settingsChanged")
+    static let showSettingsNotification = Notification.Name("com.hibernal.showSettings")
+    static let hideSettingsNotification = Notification.Name("com.hibernal.hideSettings")
+    static let stopBackgroundServiceNotification = Notification.Name("com.hibernal.stopBackgroundService")
+    static let startBackgroundServiceNotification = Notification.Name("com.hibernal.startBackgroundService")
 
-    private static var launchAgentLabel: String { "com.hibernatecontrol.agent" }
+    private static var launchAgentLabel: String { "com.hibernal.agent" }
 
     private static var launchAgentPlistURL: URL {
         FileManager.default.homeDirectoryForCurrentUser
@@ -120,7 +120,7 @@ enum BackgroundAgentManager {
             try data.write(to: launchAgentPlistURL)
             return reloadLaunchAgent()
         } catch {
-            NSLog("Hibernate Control: failed to install launch agent: \(error)")
+            NSLog("Hibernal: failed to install launch agent: \(error)")
             return false
         }
     }
