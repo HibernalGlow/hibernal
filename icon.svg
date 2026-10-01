@@ -1,27 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg"
      width="1024" height="1024" viewBox="0 0 1024 1024"
      role="img" aria-labelledby="t d">
-  <title id="t">回弯双角与三角护目镜</title>
-  <desc id="d">白色圆角底板上的抽象徽记：两侧末端上翘的回弯角，下方横向三角护目镜，镜片镂空露出粉色瞳光。</desc>
+  <title id="t">蝴蝶结探照灯</title>
+  <desc id="d">白色圆角底板上的蝴蝶结形双探照灯徽记：薰衣草紫灯带，炭灰三角灯框，灯窗透出粉色光，中央红色点缀。</desc>
 
   <defs>
-    <!-- MD3 色阶：同一紫色系的深浅分层 -->
-    <!-- 角：深靛紫  护目镜带：中紫  镜框：亮紫 -->
-
-    <!-- 末端上翘的回弯角 -->
-    <path id="horn" d="
-      M 198 274
-      C 120 276, 70 232, 70 172
-      C 70 120, 104 84, 150 90
-      C 188 95, 206 128, 192 162
-      C 184 138, 166 126, 144 132
-      C 120 139, 118 174, 134 198
-      C 150 222, 174 236, 204 240
-      Z"/>
-    <!-- 角内侧高光条 -->
-    <path id="horn-hl" d="M 96 150 C 108 182 128 206 160 220"
-          fill="none" stroke-linecap="round"/>
-
+    <!-- 配色取自角色：镜框=护目镜炭灰  灯带=薰衣草发色  灯光=品红瞳色 -->
     <filter id="tile-shadow" x="-10%" y="-10%" width="120%" height="125%">
       <feGaussianBlur in="SourceAlpha" stdDeviation="12"/>
       <feOffset dy="10" result="b"/>
@@ -35,28 +19,11 @@
   <rect x="100" y="100" width="824" height="824" rx="185" ry="185"
         fill="#FFFFFF" filter="url(#tile-shadow)"/>
 
-  <!-- 徽记整体居中放大 -->
-  <g transform="translate(512 512) scale(1.32) translate(-256 -236)">
+  <!-- 徽记放大居中，横向纵向铺满底板（内坐标 139–373 × 247–381，中心 256,314） -->
+  <g transform="translate(512 512) scale(2.9 4.0) translate(-256 -314)">
 
-    <!-- 镜片镂空处的粉色瞳光（垫在最底层） -->
-    <g fill="#F0489E">
-      <path d="M 165 281 L 223 314 L 165 347 Q 162 349, 162 343 L 162 285 Q 162 279, 165 281 Z"/>
-      <path d="M 347 281 L 289 314 L 347 347 Q 350 349, 350 343 L 350 285 Q 350 279, 347 281 Z"/>
-    </g>
-
-    <!-- 双角：深靛紫 -->
-    <g fill="#2E2552">
-      <use href="#horn"/>
-      <use href="#horn" transform="translate(512 0) scale(-1 1)"/>
-    </g>
-    <!-- 角高光：中紫 -->
-    <g stroke="#8A6FE0" stroke-width="6">
-      <use href="#horn-hl"/>
-      <use href="#horn-hl" transform="translate(512 0) scale(-1 1)"/>
-    </g>
-
-    <!-- 护目镜带：中紫 -->
-    <path fill="#6A4BC8" d="
+    <!-- 灯带：薰衣草（发色） -->
+    <path fill="#B7A3D6" d="
       M 158 257 Q 139 247, 139 270
       L 139 358 Q 139 381, 158 371
       L 239 328 Q 256 318, 273 328
@@ -64,13 +31,19 @@
       L 373 270 Q 373 247, 354 257
       L 273 300 Q 256 310, 239 300 Z"/>
 
-    <!-- 镜框：亮紫（只描边，露出里面的粉色镂空） -->
-    <g fill="none" stroke="#B9A1F5" stroke-width="10" stroke-linejoin="round">
+    <!-- 灯窗粉光（品红；必须画在灯带之上，否则被 W 形内缘盖住） -->
+    <g fill="#F0489E">
       <path d="M 165 281 L 223 314 L 165 347 Q 162 349, 162 343 L 162 285 Q 162 279, 165 281 Z"/>
       <path d="M 347 281 L 289 314 L 347 347 Q 350 349, 350 343 L 350 285 Q 350 279, 347 281 Z"/>
     </g>
 
-    <!-- 中央连接点：红色点缀 -->
-    <circle cx="256" cy="314" r="9" fill="#E5384F"/>
+    <!-- 灯框：炭灰（护目镜的黑框，只描边，露出里面的粉色灯窗） -->
+    <g fill="none" stroke="#3B3542" stroke-width="10" stroke-linejoin="round">
+      <path d="M 165 281 L 223 314 L 165 347 Q 162 349, 162 343 L 162 285 Q 162 279, 165 281 Z"/>
+      <path d="M 347 281 L 289 314 L 347 347 Q 350 349, 350 343 L 350 285 Q 350 279, 347 281 Z"/>
+    </g>
   </g>
+
+  <!-- 中央连接点：红色点缀（画在缩放组外保持正圆） -->
+  <circle cx="512" cy="512" r="27" fill="#E5384F"/>
 </svg>
