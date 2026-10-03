@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1200" height="706" viewBox="0 0 1200 706"
+     role="img" aria-labelledby="title desc">
+  <title id="title">Hibernal hibernate sequence</title>
+  <desc id="desc">Six ordered steps of one Hibernal hibernate, as shipped in hibernate.sh: trigger from the menu bar or shortcut, read pmset assertions and wait out the cooldown with a countdown, release sleep-blocking agents and stop Time Machine and eject disks, set hibernatemode 25, run pmset sleepnow and verify with kern.hibernatecount, then restore hibernatemode 3 after wake.</desc>
+
+  <rect width="1200" height="706" rx="26" fill="#14121A"/>
+
+  <g id="heading">
+    <text x="56" y="52" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="18" letter-spacing="1.4" fill="#6E6880">AS SHIPPED IN hibernate.sh</text>
+    <text x="56" y="90" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, sans-serif"
+          font-size="40" font-weight="700" fill="#F4F1EC">What one keypress runs</text>
+    <line x1="56" y1="108" x2="1144" y2="108" stroke="#2A2637" stroke-width="1.5"/>
+    <circle cx="56" cy="108" r="4.5" fill="#E5384F"/>
+  </g>
+
+  <g id="step-1" transform="translate(0 124)">
+    <text x="56" y="56" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="26" fill="#3E3A4E">01</text>
+    <text x="128" y="40" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, sans-serif"
+          font-size="22" font-weight="700" fill="#F4F1EC">Trigger</text>
+    <text x="128" y="70" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, sans-serif"
+          font-size="20" fill="#9C94AF">Menu bar moon, or the global shortcut.</text>
+    <text x="1144" y="40" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="20" fill="#B7A3D6">Hibernate Now</text>
+    <text x="1144" y="70" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="19" fill="#6E6880">&#8963;&#8965;&#8984; \</text>
+  </g>
+  <line x1="56" y1="216" x2="1144" y2="216" stroke="#211E2B" stroke-width="1"/>
+
+  <g id="step-2" transform="translate(0 216)">
+    <text x="56" y="56" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="26" fill="#3E3A4E">02</text>
+    <text x="128" y="40" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, sans-serif"
+          font-size="22" font-weight="700" fill="#F4F1EC">Read the cooldown</text>
+    <text x="128" y="70" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, sans-serif"
+          font-size="20" fill="#9C94AF">Countdown if powerd still holds a wake lock.</text>
+    <text x="1144" y="40" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="20" fill="#B7A3D6">pmset -g assertions</text>
+    <text x="1144" y="70" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="19" fill="#6E6880">waits at most 125 s</text>
+  </g>
+  <line x1="56" y1="308" x2="1144" y2="308" stroke="#211E2B" stroke-width="1"/>
+
+  <g id="step-3" transform="translate(0 308)">
+    <text x="56" y="56" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="26" fill="#3E3A4E">03</text>
+    <text x="128" y="40" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, sans-serif"
+          font-size="22" font-weight="700" fill="#F4F1EC">Clear the way</text>
+    <text x="128" y="70" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, sans-serif"
+          font-size="20" fill="#9C94AF">SIGSTOP the awake-keepers; eject is opt-in.</text>
+    <text x="1144" y="40" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="20" fill="#B7A3D6">pkill -SIGSTOP AMPDeviceDiscoveryAgent</text>
+    <text x="1144" y="70" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="19" fill="#6E6880">tmutil stopbackup &#183; diskutil eject</text>
+  </g>
+  <line x1="56" y1="400" x2="1144" y2="400" stroke="#211E2B" stroke-width="1"/>
+
+  <g id="step-4" transform="translate(0 400)">
+    <text x="56" y="56" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="26" fill="#3E3A4E">04</text>
+    <text x="128" y="40" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, sans-serif"
+          font-size="22" font-weight="700" fill="#F4F1EC">Arm the image</text>
+    <text x="128" y="70" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, sans-serif"
+          font-size="20" fill="#9C94AF">All power sources; standby and Power Nap off.</text>
+    <text x="1144" y="40" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="20" fill="#B7A3D6">pmset -a hibernatemode 25</text>
+    <text x="1144" y="70" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="19" fill="#6E6880">standby 0 &#183; powernap 0 &#183; womp 0</text>
+  </g>
+  <line x1="56" y1="492" x2="1144" y2="492" stroke="#211E2B" stroke-width="1"/>
+
+  <g id="step-5" transform="translate(0 492)">
+    <text x="56" y="56" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="26" fill="#3E3A4E">05</text>
+    <text x="128" y="40" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, sans-serif"
+          font-size="22" font-weight="700" fill="#F4F1EC">Sleep, then prove it</text>
+    <text x="128" y="70" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, sans-serif"
+          font-size="20" fill="#9C94AF">Verified by a kernel counter, never assumed.</text>
+    <text x="1144" y="40" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="20" fill="#B7A3D6">pmset sleepnow</text>
+    <text x="1144" y="70" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="19" fill="#6E6880">sysctl -n kern.hibernatecount</text>
+  </g>
+  <line x1="56" y1="584" x2="1144" y2="584" stroke="#211E2B" stroke-width="1"/>
+
+  <g id="step-6" transform="translate(0 584)">
+    <text x="56" y="56" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="26" fill="#3E3A4E">06</text>
+    <text x="128" y="40" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, sans-serif"
+          font-size="22" font-weight="700" fill="#F4F1EC">Restore on wake</text>
+    <text x="128" y="70" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, sans-serif"
+          font-size="20" fill="#9C94AF">Optional, on by default: mode 3 for lid-close.</text>
+    <text x="1144" y="40" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="20" fill="#B7A3D6">pmset -a hibernatemode 3</text>
+    <text x="1144" y="70" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="19" fill="#6E6880">SIGCONT &#183; killall Finder</text>
+  </g>
+</svg>

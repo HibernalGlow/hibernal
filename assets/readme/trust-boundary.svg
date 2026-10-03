@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1200" height="400" viewBox="0 0 1200 400"
+     role="img" aria-labelledby="title desc">
+  <title id="title">Hibernal privilege model</title>
+  <desc id="desc">Three hops: Hibernal.app runs as you and writes hibernate.sh; it hands the script over XPC to com.hibernal.helper in /Library/PrivilegedHelperTools, which runs as root; the helper calls pmset to set hibernatemode 25 and sleepnow. Readiness is a SHA-256 comparison between the embedded helper and the installed one, so app updates do not re-prompt for a password.</desc>
+
+  <rect width="1200" height="400" rx="26" fill="#14121A"/>
+
+  <g id="heading">
+    <text x="56" y="52" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="18" letter-spacing="1.4" fill="#6E6880">PRIVILEGE MODEL</text>
+    <text x="56" y="90" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, sans-serif"
+          font-size="40" font-weight="700" fill="#F4F1EC">One password, ever</text>
+    <line x1="56" y1="108" x2="1144" y2="108" stroke="#2A2637" stroke-width="1.5"/>
+    <circle cx="56" cy="108" r="4.5" fill="#E5384F"/>
+  </g>
+
+  <g id="hop-app" transform="translate(56 136)">
+    <rect width="320" height="168" rx="20" fill="#1C1926" stroke="#2A2637" stroke-width="1"/>
+    <text x="24" y="34" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="18" letter-spacing="1" fill="#6E6880">AS YOU</text>
+    <text x="24" y="70" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, sans-serif"
+          font-size="22" font-weight="700" fill="#F4F1EC">Hibernal.app</text>
+    <line x1="24" y1="84" x2="62" y2="84" stroke="#B7A3D6" stroke-width="2"/>
+    <text x="24" y="116" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="19" fill="#B7A3D6">Settings + hotkey</text>
+    <text x="24" y="140" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="19" fill="#6E6880">writes hibernate.sh</text>
+  </g>
+
+  <g id="link-xpc">
+    <text x="408" y="208" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="18" fill="#6E6880">XPC</text>
+    <line x1="384" y1="222" x2="424" y2="222" stroke="#3B3542" stroke-width="1.5"/>
+    <path d="M 424 216 L 434 222 L 424 228" fill="none" stroke="#6E6880" stroke-width="1.5"/>
+  </g>
+
+  <g id="hop-helper" transform="translate(440 136)">
+    <rect width="320" height="168" rx="20" fill="#1C1926" stroke="#B7A3D6" stroke-opacity="0.35" stroke-width="1"/>
+    <text x="24" y="34" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="18" letter-spacing="1" fill="#6E6880">AS ROOT</text>
+    <text x="24" y="70" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, sans-serif"
+          font-size="22" font-weight="700" fill="#F4F1EC">com.hibernal.helper</text>
+    <line x1="24" y1="84" x2="62" y2="84" stroke="#B7A3D6" stroke-width="2"/>
+    <text x="24" y="116" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="19" fill="#B7A3D6">PrivilegedHelperTools</text>
+    <text x="24" y="140" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="19" fill="#6E6880">LaunchDaemons plist</text>
+  </g>
+
+  <g id="link-bash">
+    <text x="792" y="208" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="18" fill="#6E6880">bash</text>
+    <line x1="768" y1="222" x2="808" y2="222" stroke="#3B3542" stroke-width="1.5"/>
+    <path d="M 808 216 L 818 222 L 808 228" fill="none" stroke="#6E6880" stroke-width="1.5"/>
+  </g>
+
+  <g id="hop-kernel" transform="translate(824 136)">
+    <rect width="320" height="168" rx="20" fill="#1C1926" stroke="#2A2637" stroke-width="1"/>
+    <text x="24" y="34" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="18" letter-spacing="1" fill="#6E6880">AS THE MACHINE</text>
+    <text x="24" y="70" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, sans-serif"
+          font-size="22" font-weight="700" fill="#F4F1EC">pmset</text>
+    <line x1="24" y1="84" x2="62" y2="84" stroke="#F0489E" stroke-width="2"/>
+    <text x="24" y="116" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="19" fill="#B7A3D6">hibernatemode 25</text>
+    <text x="24" y="140" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="19" fill="#F0489E">sleepnow</text>
+  </g>
+
+  <g id="rule">
+    <text x="56" y="344" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="20" fill="#B7A3D6">isReady = SHA-256(embedded helper) == SHA-256(installed helper)</text>
+    <text x="56" y="372" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, sans-serif"
+          font-size="20" fill="#9C94AF">So updating the app never re-prompts; only a changed helper does.</text>
+  </g>
+</svg>

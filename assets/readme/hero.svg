@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1200" height="420" viewBox="0 0 1200 420"
+     role="img" aria-labelledby="title desc">
+  <title id="title">Hibernal — deep hibernate on demand for macOS</title>
+  <desc id="desc">Hibernal puts a Mac straight into deep hibernation with one keystroke, without closing the lid. Beside the title, the default shortcut Control-Option-Command-backslash is shown as keycaps, and below is a real excerpt from the app's own hibernate log: hibernate start, hibernatemode 25, Sleeping now..., wake restore.</desc>
+
+  <defs>
+    <g id="emblem">
+      <rect x="100" y="100" width="824" height="824" rx="185" ry="185" fill="#FFFFFF"/>
+      <g transform="translate(512 512) scale(2.9 4.0) translate(-256 -314)">
+        <path fill="#B7A3D6" d="M 158 257 Q 139 247, 139 270 L 139 358 Q 139 381, 158 371 L 239 328 Q 256 318, 273 328 L 354 371 Q 373 381, 373 358 L 373 270 Q 373 247, 354 257 L 273 300 Q 256 310, 239 300 Z"/>
+        <g fill="#F0489E">
+          <path d="M 165 281 L 223 314 L 165 347 Q 162 349, 162 343 L 162 285 Q 162 279, 165 281 Z"/>
+          <path d="M 347 281 L 289 314 L 347 347 Q 350 349, 350 343 L 350 285 Q 350 279, 347 281 Z"/>
+        </g>
+        <g fill="none" stroke="#3B3542" stroke-width="10" stroke-linejoin="round">
+          <path d="M 165 281 L 223 314 L 165 347 Q 162 349, 162 343 L 162 285 Q 162 279, 165 281 Z"/>
+          <path d="M 347 281 L 289 314 L 347 347 Q 350 349, 350 343 L 350 285 Q 350 279, 347 281 Z"/>
+        </g>
+      </g>
+      <circle cx="512" cy="512" r="27" fill="#E5384F"/>
+    </g>
+  </defs>
+
+  <rect width="1200" height="420" rx="26" fill="#14121A"/>
+
+  <g id="title-block">
+    <text x="56" y="64" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="18" letter-spacing="1.4" fill="#6E6880">MACOS 13+ &#183; UNIVERSAL &#183; v2.0.0</text>
+    <text x="52" y="136" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, sans-serif"
+          font-size="70" font-weight="700" letter-spacing="-1.5" fill="#F4F1EC">Hibernal</text>
+    <text x="56" y="178" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, sans-serif"
+          font-size="23" fill="#C9C3D6">Deep hibernation on demand &#8212; memory to disk,</text>
+    <text x="56" y="208" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, sans-serif"
+          font-size="23" fill="#C9C3D6">power truly off. No lid required.</text>
+  </g>
+
+  <g id="shortcut" transform="translate(648 84)">
+    <text x="0" y="14" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="16" letter-spacing="1.2" fill="#6E6880">DEFAULT SHORTCUT</text>
+    <g fill="#221E2C" stroke="#3B3542" stroke-width="1.5">
+      <rect x="0" y="30" width="44" height="44" rx="11"/>
+      <rect x="54" y="30" width="44" height="44" rx="11"/>
+      <rect x="108" y="30" width="44" height="44" rx="11"/>
+      <rect x="178" y="30" width="60" height="44" rx="11" stroke="#B7A3D6"/>
+    </g>
+    <g font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif"
+       font-size="24" fill="#F4F1EC" text-anchor="middle">
+      <text x="22" y="61">&#8963;</text>
+      <text x="76" y="61">&#8965;</text>
+      <text x="130" y="61">&#8984;</text>
+      <text x="208" y="61" fill="#B7A3D6">\</text>
+    </g>
+  </g>
+
+  <use href="#emblem" transform="translate(975 44) scale(0.17)"/>
+
+  <line x1="56" y1="226" x2="1144" y2="226" stroke="#2A2637" stroke-width="1.5"/>
+  <circle cx="56" cy="226" r="4.5" fill="#E5384F"/>
+
+  <g id="real-log">
+    <rect x="56" y="240" width="1088" height="148" rx="20" fill="#1C1926" stroke="#2A2637" stroke-width="1"/>
+    <text x="80" y="266" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="16" letter-spacing="0.6" fill="#6E6880">~/Library/Logs/Hibernal/hibernate.log</text>
+    <text x="80" y="292" xml:space="preserve" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="20" fill="#9C94AF">=== Fri Oct  2 03:37:32 CST 2026 hibernate start ===</text>
+    <text x="80" y="316" xml:space="preserve" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="20" fill="#B7A3D6"> hibernatemode        25</text>
+    <text x="80" y="340" xml:space="preserve" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="20" fill="#F0489E">Sleeping now...</text>
+    <text x="80" y="364" xml:space="preserve" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
+          font-size="20" fill="#9C94AF">=== Fri Oct  2 03:48:04 CST 2026 wake restore ===</text>
+  </g>
+</svg>
