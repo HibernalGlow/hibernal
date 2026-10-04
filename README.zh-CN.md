@@ -74,6 +74,8 @@ brew install --cask hibernalglow/tap/hibernal
 
 或者从[最新版本页](https://github.com/HibernalGlow/hibernal/releases/latest)下载 `Hibernal-<version>.dmg`，挂载后把 **Hibernal** 拖进**应用程序**。
 
+每个版本还会同时给出 `Hibernal-<version>-arm64.dmg` 与 `Hibernal-<version>-x86_64.dmg` — 同一个 App，只装一种芯片，小大约 15%。`arm64` 是 Apple 芯片，`x86_64` 是 Intel；不带后缀的那个是通用包，也是 Homebrew 装的版本。
+
 构建产物是**临时签名（ad-hoc）且未公证**的 — 这个项目没有 Developer ID。签名本身是有效的（`codesign --verify --deep --strict` 通过），所以 Finder 不会说 App 已损坏，但带隔离属性的下载仍需一次手动放行：**系统设置 → 隐私与安全性 → 仍要打开**。Homebrew 安装同样会打隔离标记，因此每次安装或升级后都要放行这一次。
 
 然后：按下 `Control + Option + Command + \`，输一次密码装助手，机器就进入休眠。带刘海的 MacBook 上月亮图标可能被收进菜单栏 `•••` 溢出区 — 快捷键在两种情况下都照常生效。
@@ -123,9 +125,9 @@ cd hibernal
 
 需要 macOS 13.0+，以及提供 `swiftc` 和 `codesign` 的 Xcode 命令行工具。产物是 `dist/Hibernal.app` 和 `releases/Hibernal-<version>.dmg`（两者都在 gitignore 里；发布资产由 CI 产出）。
 
-`build-app.sh` 会编译 `ARCHS` 里的每个架构（默认 `arm64 x86_64`），用 `lipo` 合成一个通用二进制，再由内向外签名 — 先签助手，再封 bundle — 如果 `codesign --verify --deep --strict` 不通过就让构建失败。设置 `SIGN_IDENTITY="Developer ID Application: …"` 可用真实证书签名。
+`build-app.sh` 会编译 `ARCHS` 里的每个架构（默认 `arm64 x86_64`），用 `lipo` 合成一个通用二进制，再由内向外签名 — 先签助手，再封 bundle — 如果 `codesign --verify --deep --strict` 不通过就让构建失败。`build-dmg.sh` 认同一个 `ARCHS`，`DMG_SUFFIX` 决定镜像名 `Hibernal-<version><后缀>.dmg` — CI 就是靠这两个开关一次出通用包加两个单架构包。设置 `SIGN_IDENTITY="Developer ID Application: …"` 可用真实证书签名。
 
-推送 `v*` 标签会触发 `.github/workflows/release.yml`，它负责构建、校验、把 DMG 作为发布资产上传，并在任务摘要里打印 sha256 供 Homebrew cask 使用。
+推送 `v*` 标签会触发 `.github/workflows/release.yml`，它负责构建三份 DMG、校验、把三份都作为发布资产上传，并在任务摘要里打印每一份的 sha256 供 Homebrew cask 使用。
 
 ## 2.0.0 改名
 

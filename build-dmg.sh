@@ -4,7 +4,9 @@ set -euo pipefail
 SCRIPT_DIR=${0:a:h}
 APP_NAME="Hibernal"
 VERSION=$(cat "$SCRIPT_DIR/VERSION")
-DMG_NAME="$APP_NAME-$VERSION.dmg"
+# The unsuffixed name is exactly what the Homebrew cask downloads, so per-architecture
+# images have to be suffixed siblings instead of a replacement for it.
+DMG_NAME="$APP_NAME-$VERSION${DMG_SUFFIX:-}.dmg"
 STAGING_DIR="$SCRIPT_DIR/build/dmg-staging"
 DMG_PATH="$SCRIPT_DIR/releases/$DMG_NAME"
 APP_BUNDLE="$SCRIPT_DIR/dist/$APP_NAME.app"

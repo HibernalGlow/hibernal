@@ -11,68 +11,97 @@ permissions:
   contents: write
 
 jobs:
-  # One job does build and release so the DMG never has to cross between runners.
+  # One job does build and release so no DMG ever has to cross between runners.
   # Tag pushes publish; branches and PRs only build (the codesign gate still runs).
   build:
     runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build universal app and DMG
-        run: ./build-dmg.sh
-
-      - name: Collect asset facts
-        id: asset
+      - name: Build universal and per-architecture DMGs
         run: |
           version=$(cat VERSION)
-          dmg="releases/Hibernal-${version}.dmg"
-          sha=$(shasum -a 256 "$dmg" | cut -d' ' -f1)
-          archs=$(lipo -archs "dist/Hibernal.app/Contents/MacOS/Hibernal")
+          : > assets.tsv
+          build() { # $1 = ARCHS, $2 = artifact suffix
+              ARCHS="$1" DMG_SUFFIX="$2" ./build-dmg.sh
+              dmg="releases/Hibernal-${version}${2}.dmg"
+              # Read the arch list while dist/ still holds this build: the next
+              # build-app.sh run wipes it, so a later loop could not tell the
+              # three images apart.
+              printf '%s\t%s\t%s\n' \
+                "$(basename "$dmg")" \
+                "$(lipo -archs "dist/Hibernal.app/Contents/MacOS/Hibernal")" \
+                "$(shasum -a 256 "$dmg" | cut -d' ' -f1)" >> assets.tsv
+          }
+          # The bare name stays universal: the Homebrew cask URL is exactly
+          # Hibernal-<version>.dmg. The single-arch images are for people who
+          # would rather download half the bytes.
+          build "arm64 x86_64" ""
+          build "arm64" "-arm64"
+          build "x86_64" "-x86_64"
+          column -t -s$'\t' assets.tsv
+
+      - name: Report what was built
+        run: |
           {
-            echo "dmg=$dmg"
-            echo "sha256=$sha"
-            echo "version=$version"
-          } >> "$GITHUB_OUTPUT"
-          {
-            echo "### Hibernal ${version}"
-            echo "- file: \`$(basename "$dmg")\`"
-            echo "- sha256: \`${sha}\`"
-            echo "- architectures: \`${archs}\`"
-            echo "- signature: ad-hoc, not notarized"
+            echo "### Hibernal $(cat VERSION)"
+            echo
+            echo "| file | architectures | sha256 |"
+            echo "| --- | --- | --- |"
+            while IFS=$'\t' read -r name archs sha; do
+              echo "| \`$name\` | \`$archs\` | \`$sha\` |"
+            done < assets.tsv
+            echo
+            echo "Ad-hoc signed, not notarized."
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Publish GitHub release
         if: startsWith(github.ref, 'refs/tags/v')
         env:
           GH_TOKEN: ${{ github.token }}
-          DMG: ${{ steps.asset.outputs.dmg }}
-          VERSION: ${{ steps.asset.outputs.version }}
-          SHA256: ${{ steps.asset.outputs.sha256 }}
         run: |
-          cat > notes.md <<'NOTES'
-          Ad-hoc signed and **not notarized** (no Developer ID), so a quarantined copy needs
-          one manual approval: **System Settings → Privacy & Security → Open Anyway**.
-          `brew install --cask hibernalglow/tap/hibernal` applies quarantine too, so the same
-          override is needed there once per install.
-
-          sha256: `PLACEHOLDER_SHA`
-          NOTES
-          perl -pi -e "s/PLACEHOLDER_SHA/$SHA256/" notes.md
+          version=$(cat VERSION)
+          paths=()
+          while IFS=$'\t' read -r name _; do
+              paths+=("releases/$name")
+          done < assets.tsv
+          {
+            echo "Ad-hoc signed and **not notarized** (no Developer ID), so a quarantined copy needs"
+            echo "one manual approval: **System Settings → Privacy & Security → Open Anyway**."
+            echo "`brew install --cask hibernalglow/tap/hibernal` applies quarantine too, so the same"
+            echo "override is needed there once per install."
+            echo
+            echo "| file | architectures | sha256 |"
+            echo "| --- | --- | --- |"
+            while IFS=$'\t' read -r name archs sha; do
+              echo "| [\`$name\`](https://github.com/$GITHUB_REPOSITORY/releases/download/$GITHUB_REF_NAME/$name) | \`$archs\` | \`$sha\` |"
+            done < assets.tsv
+            echo
+            echo "Pick \`-arm64\` or \`-x86_64\` for the smaller download; the unsuffixed image is"
+            echo "universal and is the one Homebrew installs."
+          } > notes.md
           # The first run of this workflow died on a transient "error connecting to
           # api.github.com" from the runner, so publishing retries. A half-done attempt
-          # leaves the release created but the asset missing, so each try falls back to
-          # uploading onto the existing release, and the loop ends by asserting the
+          # leaves the release created but the assets missing, so each try falls back to
+          # uploading onto the existing release, and the loop ends by asserting every
           # asset is really attached -- a green job must not mean "probably published".
           for attempt in 1 2 3; do
-              if gh release create "$GITHUB_REF_NAME" "$DMG" \
-                   --title "Hibernal $VERSION" \
+              if gh release create "$GITHUB_REF_NAME" "${paths[@]}" \
+                   --title "Hibernal $version" \
                    --notes-file notes.md; then
                   break
               fi
               echo "attempt $attempt: create failed, trying upload onto any existing release"
-              gh release upload "$GITHUB_REF_NAME" "$DMG" --clobber && break
+              gh release upload "$GITHUB_REF_NAME" "${paths[@]}" --clobber && break
               sleep $(( attempt * 20 ))
           done
-          attached=$(gh release view "$GITHUB_REF_NAME" --json assets --jq '.assets | map(.name) | index("Hibernal-'"$VERSION"'.dmg") != null')
-          echo "asset attached: $attached"
-          [ "$attached" = "true" ]
+          attached=$(gh release view "$GITHUB_REF_NAME" --json assets --jq '.assets[].name')
+          missing=0
+          while IFS=$'\t' read -r name _; do
+              if ! printf '%s\n' "$attached" | grep -qx "$name"; then
+                  echo "asset not attached: $name"
+                  missing=1
+              fi
+          done < assets.tsv
+          printf 'attached: %s\n' "$attached"
+          [ "$missing" -eq 0 ]

@@ -74,6 +74,8 @@ brew install --cask hibernalglow/tap/hibernal
 
 Or grab `Hibernal-<version>.dmg` from [the latest release](https://github.com/HibernalGlow/hibernal/releases/latest), mount it, and drag **Hibernal** to **Applications**.
 
+Every release also carries `Hibernal-<version>-arm64.dmg` and `Hibernal-<version>-x86_64.dmg` — the same app for one chip only, roughly 15% smaller. `arm64` is Apple Silicon, `x86_64` is Intel; the unsuffixed image is universal and is what Homebrew installs.
+
 Builds are **ad-hoc signed and not notarized** — there is no Developer ID behind this project. The signature does validate (`codesign --verify --deep --strict` passes), so Finder will not call the app damaged, but a quarantined download still needs one manual approval: **System Settings → Privacy & Security → Open Anyway**. Homebrew sets the quarantine flag too, so that override applies once after each install or upgrade.
 
 Then: press `Control + Option + Command + \`, type your password once to install the helper, and the Mac goes into hibernation. On a notched MacBook the moon may sit inside the menu bar `•••` overflow — the shortcut works either way.
@@ -123,9 +125,9 @@ cd hibernal
 
 Requires macOS 13.0+, and Xcode command line tools for `swiftc` and `codesign`. Outputs are `dist/Hibernal.app` and `releases/Hibernal-<version>.dmg` (both gitignored; published assets come from CI).
 
-`build-app.sh` compiles every arch in `ARCHS` (default `arm64 x86_64`), `lipo`s them into one universal binary, signs inside-out — helper first, then the bundle seal — and fails the build if `codesign --verify --deep --strict` rejects the result. Set `SIGN_IDENTITY="Developer ID Application: …"` to sign with a real certificate.
+`build-app.sh` compiles every arch in `ARCHS` (default `arm64 x86_64`), `lipo`s them into one universal binary, signs inside-out — helper first, then the bundle seal — and fails the build if `codesign --verify --deep --strict` rejects the result. `build-dmg.sh` honours the same `ARCHS`, and `DMG_SUFFIX` names the image `Hibernal-<version><suffix>.dmg` — that pair is how CI produces the universal plus two single-arch downloads. Set `SIGN_IDENTITY="Developer ID Application: …"` to sign with a real certificate.
 
-Pushing a `v*` tag runs `.github/workflows/release.yml`, which builds, verifies and publishes the DMG as a release asset and prints its sha256 in the job summary for the Homebrew cask.
+Pushing a `v*` tag runs `.github/workflows/release.yml`, which builds all three DMGs, verifies them, publishes them as release assets, and prints every sha256 in the job summary for the Homebrew cask.
 
 ## Renamed in 2.0.0
 
